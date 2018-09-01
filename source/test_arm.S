@@ -1,4 +1,3 @@
-
 .text
 .globl __increment
 .globl __bit_clear
@@ -8,9 +7,15 @@
 .globl __func_setup
 .globl __goto
 .globl __if_else
+.globl __do_while_loop
 .globl __while_loop
 .globl __for_loop
 .globl __pointer_setup
+
+/*
+*  Following examples have local variable/argument optimization
+* variables are stored in regs instead of stack 
+*/
 
 __increment:
         ADD x0, x0, #1                        //add 1 to the passed argument
@@ -32,10 +37,15 @@ __NULL_dereference:
         LDR x0, [x0]                            // load from address given in x0
         RET
 
+/* 
+__func_setup_callee(int arg)
+        return arg + 13;
+
+__func_setup(int arg)
+        arg = func_setup_callee(arg);
+        return arg;
+*/
 __func_setup_callee:
-        /* __func_setup_callee(int arg)
-                       return arg + 13;
-        */
         SUB SP, SP, #16                         // SP must always be aligned to 16-byte boundary
         STR x0, [SP, #8]                         // store arg
         LDR x0, [SP, #8]                         // load arg
@@ -45,11 +55,6 @@ __func_setup_callee:
         ADD SP, SP, #16                          
         RET
 
-/*
-        __func_setup(int arg)
-                arg = func_setup_callee(arg);
-                return arg;
-*/
 __func_setup:
         STP x29, x30, [SP, #-32]!                     // store FP & LR 
         MOV x29, SP    
@@ -61,7 +66,14 @@ __func_setup:
         LDP x29, x30, [SP], #32                     // restore FP & LR 
         RET
 
-/* Unconditional */
+/* 
+* Unconditional Jump - goto 
+        __goto:
+                goto done;
+                i += 2;
+                done: 
+                        i = 0;
+*/
 __goto:
         B set_10
         ADD x0, x0, #2                                          // increment by 2
@@ -80,14 +92,39 @@ false_if_else:
 done_if_else: 
         RET
 
-/* Loops - no optimization*/
-/* TODO no optimization - do load and store of i */
-__while_loop:
+/* Loops */
+/*
+__do_while_loop:
+        do {
+                i++
+        } while (i < 10);
+*/
+__do_while_loop:
         ADD x0, x0, #1                          // add 1
-        CMP x0, #10                              // check if less than 10
-        B.le __while_loop                      // loop while less than 10
+        CMP x0, #9                              // check if less than 10
+        B.le __do_while_loop                      // loop while less than 10
         RET
 
+/*
+__while_loop:
+                while (i < 10)
+                        i++;
+*/
+
+__while_loop:
+        B first_jump
+run_loop:        
+        ADD x0, x0, #1                  // add 1
+first_jump:
+        CMP x0, #9                      // check if less than 10
+        B.le run_loop                    // loop while less than 10
+        RET
+
+/*
+__for_loop:
+        for (i = 0; i < 9; i ++)
+                //NOP
+*/
 __for_loop:
         MOV x0, #0                              // loop initialization
 do_for_loop:
@@ -100,13 +137,14 @@ done_for_loop:                                  // done with loop
         RET
 
 /* Pointers */
-__pointer_setup:
-        /* 
-        __pointer_setup(int arg)
+/* 
+__pointer_setup(int arg)
         int *ptr_to_arg = &arg;
         *ptr_to_arg += 2;
         return i;
-         */
+*/
+__pointer_setup:
+
         SUB SP, SP, #16
         STR x0, [SP, #12]                // store arg
         ADD x0,  SP, #12               // load pointer of arg to ptr_to_arg

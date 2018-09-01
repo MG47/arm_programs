@@ -5,7 +5,7 @@ extern int __increment(int i);
 void test_increment()
 {
 	int i = 1;
-	
+
 	int ret = i;
 
 	printf("\n\nTest incement:\n\n");
@@ -13,10 +13,9 @@ void test_increment()
 	printf("===BEGIN ASM===\n");
 
 	ret = __increment(i);
-	
+
 	printf("===END ASM===\n");
 	printf("ret after inc = %d\n", ret);
-
 }
 
 extern int __func_setup();
@@ -33,7 +32,7 @@ void test_function_setup()
 	ret = __func_setup(i);
 
 	printf("===END ASM===\n");
-	printf("ret after func =  %d\n", ret); 		// should be 3
+	printf("ret after func =  %d\n", ret); // should be 3
 }
 
 extern int __bit_clear();
@@ -91,13 +90,13 @@ extern void __NULL_dereference();
 void test_NULL_dereference()
 {
 	int *ptr = NULL;
-	
+
 	printf("\n\nTest NULL dereference:\n\n");
 	printf("ptr =  0x%p\n", ptr);
 	printf("===BEGIN ASM===\n");
-	
+
 	__NULL_dereference(ptr);
-	
+
 	printf("===END ASM===\n");
 }
 
@@ -106,13 +105,13 @@ void test_goto()
 {
 	/*unconditional jump to i = 10; */
 	int i = 4;
-	
+
 	printf("\n\nTest goto:\n\n");
 	printf("i before goto =  %d\n", i);
 	printf("===BEGIN ASM===\n");
-	
+
 	i = __goto(i);
-	
+
 	printf("===END ASM===\n");
 	printf("i after goto =  %d\n", i);
 }
@@ -122,13 +121,29 @@ void test_if_else()
 {
 	/* test if  i < 10, if true -> set i = 1 else set i = 0 */
 	int i = 4;
-	
+
 	printf("\n\nTest if else:\n\n");
 	printf("i before condition =  %d\n", i);
 	printf("===BEGIN ASM===\n");
-	
+
 	i = __if_else(i);
-	
+
+	printf("===END ASM===\n");
+	printf("i after condition =  %d\n", i);
+}
+
+extern int __do_while_loop(int i);
+void test_do_while_loop()
+{
+	/* loop do while i < 10 */
+	int i = 0;
+
+	printf("\n\nTest do_while loop:\n\n");
+	printf("i before condition =  %d\n", i);
+	printf("===BEGIN ASM===\n");
+
+	i = __do_while_loop(i);
+
 	printf("===END ASM===\n");
 	printf("i after condition =  %d\n", i);
 }
@@ -136,15 +151,15 @@ void test_if_else()
 extern int __while_loop(int i);
 void test_while_loop()
 {
-	/* loop while ++i < 10 */
+	/* loop while i < 10 */
 	int i = 0;
-	
+
 	printf("\n\nTest while loop:\n\n");
 	printf("i before condition =  %d\n", i);
 	printf("===BEGIN ASM===\n");
-	
+
 	i = __while_loop(i);
-	
+
 	printf("===END ASM===\n");
 	printf("i after condition =  %d\n", i);
 }
@@ -154,13 +169,13 @@ void test_for_loop()
 {
 	/* loop for i = 0; i < 10; i++ */
 	int i = 0;
-	
+
 	printf("\n\nTest for loop:\n\n");
 	printf("i before condition =  %d\n", i);
 	printf("===BEGIN ASM===\n");
-	
+
 	i = __for_loop(i);
-	
+
 	printf("===END ASM===\n");
 	printf("i after condition =  %d\n", i);
 }
@@ -181,7 +196,7 @@ void test_pointer_setup()
 	printf("i after test =  %d\n", i);
 }
 
-int	main()
+int main()
 {
 	printf("Arm assembly test...\n");
 
@@ -194,13 +209,14 @@ int	main()
 	test_bit_set();
 	test_bit_toggle();
 
-	/* Unconditional INCOMPLETE */
+	/* Unconditional Jumps - goto */
 	test_goto();
 
 	/* Conditionals */
 	test_if_else();
 
 	/* Loops */
+	test_do_while_loop();
 	test_while_loop();
 	test_for_loop();
 
@@ -208,10 +224,9 @@ int	main()
 	test_pointer_setup();
 
 	/* Error conditions */
-//	test_NULL_dereference();
+	//	test_NULL_dereference();
 
 	printf("Arm assembly test...DONE\n");
 
 	return 0;
 }
-
