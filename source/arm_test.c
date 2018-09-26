@@ -132,7 +132,24 @@ void test_if_else()
 	printf("i after condition =  %d\n", i);
 }
 
-extern int __do_while_loop(int i);
+extern int __switch_case(int i);
+void test_switch_case()
+{
+	/* switch i : 1->10, 3->30 (fall-through), 4->40 7 -> 70 default -1 */
+	int i = 1;
+
+	printf("\n\nTest switch case:\n\n");
+	printf("i before condition =  %d\n", i);
+	printf("===BEGIN ASM===\n");
+
+	i = __switch_case(i);
+
+	printf("===END ASM===\n");
+	printf("i after condition =  %d\n", i);
+}
+
+    extern int
+    __do_while_loop(int i);
 void test_do_while_loop()
 {
 	/* loop do while i < 10 */
@@ -183,7 +200,7 @@ void test_for_loop()
 extern int __pointer_setup(int i);
 void test_pointer_setup()
 {
-	/* add 2 to i using with pointers */
+	/* add 2 to i using pointers */
 	int i = 3;
 
 	printf("\n\nTest pointer setup:\n\n");
@@ -191,6 +208,22 @@ void test_pointer_setup()
 	printf("===BEGIN ASM===\n");
 
 	i = __pointer_setup(i);
+
+	printf("===END ASM===\n");
+	printf("i after test =  %d\n", i);
+}
+
+extern int __array_setup(int i);
+void test_array_setup()
+{
+	/* arr[3] = {4, 1, 3} ; change arr[1] = 7 ; i = 7 on return */
+	int i = 1;
+
+	printf("\n\nTest array setup:\n\n");
+	printf("i before test =  %d\n", i);
+	printf("===BEGIN ASM===\n");
+
+	i = __array_setup(i);
 
 	printf("===END ASM===\n");
 	printf("i after test =  %d\n", i);
@@ -214,6 +247,7 @@ int main()
 
 	/* Conditionals */
 	test_if_else();
+	test_switch_case();
 
 	/* Loops */
 	test_do_while_loop();
@@ -223,8 +257,19 @@ int main()
 	/* Pointers */
 	test_pointer_setup();
 
+	/* Arrays */
+	test_array_setup();
+
 	/* Error conditions */
 	//	test_NULL_dereference();
+
+	// struct, bit fields
+
+	/* TODO */
+	// signed/unsigned int handling
+	// float
+	// pre vs post increment
+	// TODO continue, break
 
 	printf("Arm assembly test...DONE\n");
 

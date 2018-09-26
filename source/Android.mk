@@ -15,6 +15,6 @@ LOCAL_MODULE_TAGS := eng
 
 LOCAL_MODULE := arm_test
 
-LOCAL_LDFLAGS += -Wl,--no-fatal-warnings
+LOCAL_LDFLAGS += -Wl,--no-fatal-warnings,-Map,arm_test.map
 
 include $(BUILD_EXECUTABLE)
