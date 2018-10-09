@@ -216,8 +216,10 @@ void test_pointer_setup()
 extern int __array_setup(int i);
 void test_array_setup()
 {
-	/* arr[3] = {4, 1, 3} ; change arr[1] = 7 ; i = 7 on return */
-	int i = 1;
+	/* arr[3] = {4, 1, 3} ; 
+	arr[0] = 9; arr[1] = arr[1] + 1 -> 2; arr[2] = 6 return value at index i 
+	*/
+	int i = 2;
 
 	printf("\n\nTest array setup:\n\n");
 	printf("i before test =  %d\n", i);

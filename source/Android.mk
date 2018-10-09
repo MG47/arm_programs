@@ -4,6 +4,7 @@ include $(CLEAR_VARS)
 LOCAL_SRC_FILES:=\
 	arm_test.c \
 	test_arm.S \
+	test_arm_2.S
 	
 #LOCAL_SYSTEM_SHARED_LIBRARIES := libc
 

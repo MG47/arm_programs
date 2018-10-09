@@ -12,7 +12,6 @@
 .globl __for_loop
 .globl __pointer_setup
 .globl __NULL_dereference
-.globl __array_setup
 
 /*
 *  Following examples have local variable/argument optimization
@@ -200,13 +199,4 @@ __pointer_setup:
 __NULL_dereference:                     
 	LDR x0, [x0]                            // load from address given in x0
 	MOV x0, #3
-	RET
-/*
-__array_setup(int arg)
-	arr[3] = {4, 1, 3} 
-	arr[arg] = 7 
-	return arr[arg];
-*/
-//TODO
-__array_setup:
 	RET
