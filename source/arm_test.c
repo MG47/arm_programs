@@ -219,7 +219,7 @@ void test_array_setup()
 	/* arr[3] = {4, 1, 3} ; 
 	arr[0] = 9; arr[1] = arr[1] + 1 -> 2; arr[2] = 6 return value at index i 
 	*/
-	int i = 2;
+	int i = 1;
 
 	printf("\n\nTest array setup:\n\n");
 	printf("i before test =  %d\n", i);

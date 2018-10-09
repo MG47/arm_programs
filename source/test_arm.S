@@ -1,38 +1,14 @@
+/*
+* Basic assembly
+*/
+
 .text
 .globl __increment
-.globl __bit_clear
-.globl __bit_set
-.globl __bit_toggle
 .globl __func_setup
-.globl __goto
-.globl __if_else
-.globl __switch_case
-.globl __do_while_loop
-.globl __while_loop
-.globl __for_loop
-.globl __pointer_setup
-.globl __NULL_dereference
-
-/*
-*  Following examples have local variable/argument optimization
-* variables are stored in regs instead of stack 
-*/
 
 __increment:
 	ADD x0, x0, #1                        //add 1 to the passed argument
 	RET  x30                                 // return ('ret x30' - link register)
-
-__bit_clear:
-	BIC x0, x0, x1                          // clear bits in x0, as given by x1
-	RET
-
-__bit_set:
-	ORR x0, x0, x1                          // set bits in x0, as given by x1
-	RET
-
-__bit_toggle:
-	EOR x0, x0, x1                          // toggle bits in x0, as given x1
-	RET
 
 /* 
 __func_setup_callee(int arg)
@@ -63,140 +39,3 @@ __func_setup:
 	LDP x29, x30, [SP], #32                     // restore FP & LR 
 	RET
 
-/* 
-* Unconditional Jump - goto 
-	__goto:
-		goto done;
-		i += 2;
-		done: 
-			i = 0;
-*/
-__goto:
-	B set_10
-	ADD x0, x0, #2                                          // increment by 2
-set_10:
-	MOV x0, #10
-	RET
-
-/* Conditionals */
-/* __if_else
-	if (i < 10)
-		return 1;
-	else 
-		return 0
-*/		
-__if_else:
-	CMP x0, #10                             // compare input with 10            
-	B.gt false_if_else                        // take the 'else' path (not less that 10)
-	MOV x0, #1                                // prepare return 1
-	B done_if_else
-false_if_else:
-	MOV x0, #0                                // prepare return 0      
-done_if_else: 
-	RET
-
-/*
-__switch_case(int i)
-        switch(i) {
-        case 1:
-                i = 10;
-                break;
-        case 3:
-                i = 30;
-        case 4:
-                i = 40;
-                break;
-        case 7:
-                i = 70;
-                break;
-        default:
-                i = -1;
-        }
-        return i;
-}
-*/
-// TODO
-__switch_case:
-	MOV x0, #10						// do case 1
-	b done_switch_case
-	MOV x0, #30						// do case 3 and fall-through
-	MOV x0, #40 						// do case 4
-	b done_switch_case
-	MOV x0, #70 						// do case 7
-	b done_switch_case
-	//TODO negative 1? 
-	MOV x0, #-1  						// do default case
-done_switch_case:
-	RET
-
-/* Loops */
-/*
-__do_while_loop:
-	do {
-		i++
-	} while (i < 10);
-*/
-__do_while_loop:
-	ADD x0, x0, #1                          // add 1
-	CMP x0, #9                              // check if less than 10
-	B.le __do_while_loop                      // loop while less than 10
-	RET
-
-/*
-__while_loop:
-	while (i < 10)
-	i++;
-*/
-__while_loop:
-	B first_jump
-run_loop:        
-	ADD x0, x0, #1                  // add 1
-first_jump:
-	CMP x0, #9                      // check if less than 10
-	B.le run_loop                    // loop while less than 10
-	RET
-
-/*
-__for_loop:
-	for (i = 0; i < 9; i ++)
-		//NOP
-*/
-__for_loop:
-	MOV x0, #0                              // loop initialization
-do_for_loop:
-	CMP x0, #9                             // condition
-	B.gt done_for_loop
-	NOP                                           // loop body
-	ADD x0, x0, #1                          // increment
-	B do_for_loop                           // loop
-done_for_loop:                                  // done with loop
-	RET
-
-/* Pointers */
-/* 
-__pointer_setup(int arg)
-	int *ptr_to_arg = &arg;
-	*ptr_to_arg += 2;
-	return i;
-*/
-__pointer_setup:
-	SUB SP, SP, #16
-	STR x0, [SP, #12]                // store arg
-	ADD x0,  SP, #12               // load pointer of arg to ptr_to_arg
-	STR x0, [SP, #24]                // store pointer
-	LDR x0, [SP, #24]                // load pointer
-	LDR x1, [x0]                        // load value pointed to by the pointer
-	ADD x1, x1, #2                   // add 2 to the value
-	STR x1, [x0]                       // store at address pointed to by x0
-	LDR x0, [SP, #12]                      // load arg for return
-	ADD SP, SP, #16
-	RET
-
-/*
-	__NULL_dereference(int arg)
-		*arg = 3;
-*/
-__NULL_dereference:                     
-	LDR x0, [x0]                            // load from address given in x0
-	MOV x0, #3
-	RET

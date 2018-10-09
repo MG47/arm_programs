@@ -1,3 +1,7 @@
+/*
+* Arrays
+*/
+
 .text
 .globl __array_setup
 
@@ -8,7 +12,6 @@ __array_setup(int arg)
         arr[2]  = 6;
 	return arr[arg]
 */
-//TODO
 __array_setup:
 	SUB SP, SP, #16
 	MOV x4, x0 		// Move arg to x4
