@@ -7,6 +7,7 @@ LOCAL_SRC_FILES:=\
 	test_arm_arrays.S \
 	test_bit_ops.S \
 	test_branching.S \
+	test_logical_ops.S \
 	test_loops.S \
 	test_pointers.S \
 	test_structs.S

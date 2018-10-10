@@ -6,67 +6,62 @@ void test_increment()
 {
 	int i = 1;
 
-	int ret = i;
-
 	printf("\n\nTest incement:\n\n");
-	printf("ret before inc =  %d\n", ret);
+	printf("i before inc =  %d\n", i);
 	printf("===BEGIN ASM===\n");
 
-	ret = __increment(i);
+	i = __increment(i);
 
 	printf("===END ASM===\n");
-	printf("ret after inc = %d\n", ret);
+	printf("i after inc = %d\n", i);
 }
 
 extern int __func_setup();
 void test_function_setup()
 {
-	int i = 1, ret;
+	int i = 1;
 
 	printf("\n\nTest function setup:\n\n");
 
-	ret = i;
-	printf("ret before func =  %d\n", ret);
+	printf("i before func =  %d\n", i);
 	printf("===BEGIN ASM===\n");
 
-	ret = __func_setup(i);
+	i = __func_setup(i);
 
 	printf("===END ASM===\n");
-	printf("ret after func =  %d\n", ret); // should be 3
+	printf("i after func =  %d\n", i); // should be 3
 }
 
 extern int __bit_clear();
 void test_bit_clear()
 {
 	int i = 0xd36F; // 0b1101001101101111
-
-	int ret = i, bit = (1 << 1);
+	int bit = (1 << 1);
 
 	printf("\n\nTest bit clear:\n\n");
-	printf("ret before bit clear =  0x%x\n", ret);
+	printf("i before bit clear =  0x%x\n", i);
 	printf("===BEGIN ASM===\n");
 
-	ret = __bit_clear(i, bit);
+	i = __bit_clear(i, bit);
 
 	printf("===END ASM===\n");
-	printf("ret after bit clear = 0x%x\n", ret); // should be 0xD36D ( 0b1101001101101011)
+	printf("i after bit clear = 0x%x\n", i); // should be 0xD36D ( 0b1101001101101011)
 }
 
 extern int __bit_set();
 void test_bit_set()
 {
 	int i = 0xd36F; // 0b1101001101101111
-
-	int ret = i, bit = (1 << 4);
+	int bit = (1 << 4);
 
 	printf("\n\nTest bit set:\n\n");
-	printf("ret before bit set =  0x%x\n", ret);
+	printf("i before bit set =  0x%x\n", i);
 	printf("===BEGIN ASM===\n");
 
-	ret = __bit_set(i, bit);
+	i = __bit_set(i, bit);
 
 	printf("===END ASM===\n");
-	printf("ret after bitset = 0x%x\n", ret); // should be 0xD37F ( 0b1101001101111111)
+	printf("i after bitset = 0x%x\n", i); // should be 0xD37F ( 0b1101001101111111)
 }
 
 extern int __bit_toggle();
@@ -74,16 +69,77 @@ void test_bit_toggle()
 {
 	int i = 0xd36F; // 0b1101001101101111
 
-	int ret = i, bit = (1 << 3);
+	int bit = (1 << 3);
 
 	printf("\n\nTest bit toggle:\n\n");
-	printf("ret before bit toggle =  0x%x\n", ret);
+	printf("i before bit toggle =  0x%x\n", i);
 	printf("===BEGIN ASM===\n");
 
-	ret = __bit_toggle(i, bit);
+	i = __bit_toggle(i, bit);
 
 	printf("===END ASM===\n");
-	printf("ret after bit toggle = 0x%x\n", ret); // should be 0xD367 ( 0b1101001101100111)
+	printf("i after bit toggle = 0x%x\n", i); // should be 0xD367 ( 0b1101001101100111)
+}
+
+void test_bit_ops()
+{
+	test_bit_clear();
+	test_bit_set();
+	test_bit_toggle();
+}
+
+extern int __logical_and(int a, int b);
+void test_logical_and()
+{
+	int i = 1;
+	int a = 4, b = 0;
+
+	printf("\n\nTest logical and:\n\n");
+	printf("i before logical and =  0x%x\n", i);
+	printf("===BEGIN ASM===\n");
+
+	i = __logical_and(a, b);
+
+	printf("===END ASM===\n");
+	printf("i after logical and = 0x%x\n", i);
+}
+
+extern int __logical_or(int a, int b);
+void test_logical_or()
+{
+	int i = 0;
+	int a = 4, b = 0;
+
+	printf("\n\nTest logical or:\n\n");
+	printf("i before logical or =  0x%x\n", i);
+	printf("===BEGIN ASM===\n");
+
+	i = __logical_or(a, b);
+
+	printf("===END ASM===\n");
+	printf("i after logical or = 0x%x\n", i);
+}
+
+extern int __logical_not(int a);
+void test_logical_not()
+{
+	int i = 0;
+
+	printf("\n\nTest logical not:\n\n");
+	printf("i before logical not =  0x%x\n", i);
+	printf("===BEGIN ASM===\n");
+
+	i = __logical_not(i);
+
+	printf("===END ASM===\n");
+	printf("i after logical not = 0x%x\n", i);
+}
+
+void test_logical_ops()
+{
+	test_logical_and();
+	test_logical_or();
+	test_logical_not();
 }
 
 extern void __NULL_dereference();
@@ -135,8 +191,8 @@ void test_if_else()
 extern int __switch_case(int i);
 void test_switch_case()
 {
-	/* switch i : 1->10, 3->30 (fall-through), 4->40 7 -> 70 default -1 */
-	int i = 1;
+	/* switch i : 1->10, 3->30 (fall-through to 4:), 4->40 7 -> 70, default -1 */
+	int i = 4;
 
 	printf("\n\nTest switch case:\n\n");
 	printf("i before condition =  %d\n", i);
@@ -148,8 +204,18 @@ void test_switch_case()
 	printf("i after condition =  %d\n", i);
 }
 
-    extern int
-    __do_while_loop(int i);
+void test_branching()
+{
+	/* Unconditional Jumps - goto */
+	test_goto();
+
+	/* Conditionals */
+	test_if_else();
+	test_switch_case();
+}
+
+
+extern int  __do_while_loop(int i);
 void test_do_while_loop()
 {
 	/* loop do while i < 10 */
@@ -197,6 +263,14 @@ void test_for_loop()
 	printf("i after condition =  %d\n", i);
 }
 
+void test_loops()
+{
+	test_do_while_loop();
+	test_while_loop();
+	test_for_loop();
+
+}
+
 extern int __pointer_setup(int i);
 void test_pointer_setup()
 {
@@ -239,26 +313,20 @@ int main()
 	test_increment();
 	test_function_setup();
 
-	/* Bit Manipulation */
-	test_bit_clear();
-	test_bit_set();
-	test_bit_toggle();
+	/* Bit manipulation */
+	test_bit_ops();
 
-	/* Unconditional Jumps - goto */
-	test_goto();
+	/* Logical operators */
+	test_logical_ops();
 
-	/* Conditionals */
-	test_if_else();
-	test_switch_case();
+	/* Branching - conditional/unconditional */
+	test_branching();
 
 	/* Loops */
-	test_do_while_loop();
-	test_while_loop();
-	test_for_loop();
+	test_loops();
 
 	/* Pointers */
 	test_pointer_setup();
-
 	/* Arrays */
 	test_array_setup();
 
@@ -268,12 +336,18 @@ int main()
 	// struct, bit fields
 
 	/* TODO */
+	// bit invert
+	// arithmetic ops
+	// relational
 	// signed/unsigned int handling
 	// float
 	// pre vs post increment
 	// TODO continue, break
+	// TODO shifts - logical/arithmetic on signed/unsigned
+
 
 	printf("Arm assembly test...DONE\n");
 
 	return 0;
 }
+

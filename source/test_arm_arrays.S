@@ -38,8 +38,7 @@ __array_setup:
 	STR x1, [SP, #8]
 	LDR x1, [SP, #8]
 
-	LSL x4, x4, #2 		// multiply index by 4 for 32-bit int
-	LDR x0, [SP, x4] 	// Load to x0, (arr[i]) for return;
+	LDR w0, [SP, x4, LSL#2] 	// Load to x0, (arr[i]) for return;
 	ADD SP, SP, #16
 	RET
 

@@ -32,7 +32,7 @@ set_10:
 		return 0
 */		
 __if_else:
-	CMP x0, #10                             // compare input with 10            
+	CMP x0, #10                               // compare input with 10            
 	B.gt false_if_else                        // take the 'else' path (not less that 10)
 	MOV x0, #1                                // prepare return 1
 	B done_if_else
@@ -61,17 +61,39 @@ __switch_case(int i)
         return i;
 }
 */
-// TODO
-__switch_case:
-	MOV x0, #10						// do case 1
-	b done_switch_case
-	MOV x0, #30						// do case 3 and fall-through
-	MOV x0, #40 						// do case 4
-	b done_switch_case
-	MOV x0, #70 						// do case 7
-	b done_switch_case
-	//TODO negative 1? 
-	MOV x0, #-1  						// do default case
-done_switch_case:
+ __switch_case:
+	SUB     sp, sp, #0x10
+	SUB     x0, x0, #0x1
+	CMP     w0, #0x6
+	B.hi    default_case  			// index is out of range, go to default case
+	ADR     x1, rodata_base 		// load the base of the jump table
+	ADD     x1, x1, #0x0
+	LDR     w0, [x1,w0,uxtw #2]
+	ADR     x1, first_case
+	ADD     x0, x1, w0, sxtw #2
+	BR      x0
+first_case:
+	MOV     w0, #10				// do case 1
+	B       end_case
+	MOV     w0, #30				// do case 3 and fall-through
+	MOV     w0, #40				// do case 4
+	B       end_case
+	MOV     w0, #0x46			// do case 7
+	B       end_case
+default_case:
+	MOV     w0, #-1                		// do default case 
+end_case:
+	ADD     sp, sp, #0x10
 	RET
+
+.rodata
+rodata_base:
+        .word   0x00000000
+        .word   0x0000000b
+        .word   0x00000003
+        .word   0x00000005
+        .word   0x0000000b
+        .word   0x0000000b
+        .word   0x00000008
+
 
