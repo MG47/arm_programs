@@ -1,3 +1,6 @@
+/*
+* arm_test.c : Entry point to test programs
+*/
 
 #include <stdio.h>
 
@@ -81,11 +84,27 @@ void test_bit_toggle()
 	printf("i after bit toggle = 0x%x\n", i); // should be 0xD367 ( 0b1101001101100111)
 }
 
+extern __bit_complement();
+void test_bit_complement()
+{
+	int i = 0xAAAAAAAA; // 1010 ...
+
+	printf("\n\nTest bit complement:\n\n");
+	printf("i before bit complement =  0x%x\n", i);
+	printf("===BEGIN ASM===\n");
+
+	i = __bit_complement(i);
+
+	printf("===END ASM===\n");
+	printf("i after bit complement = 0x%x\n", i); // 0101 ... 
+}
+
 void test_bit_ops()
 {
 	test_bit_clear();
 	test_bit_set();
 	test_bit_toggle();
+	test_bit_complement();
 }
 
 extern int __logical_and(int a, int b);
@@ -142,24 +161,34 @@ void test_logical_ops()
 	test_logical_not();
 }
 
-extern void __NULL_dereference();
-void test_NULL_dereference()
+extern int __basic_int_arith(int a, int b);
+void test_arith_ops()
 {
-	int *ptr = NULL;
+	/* Test integer arithmetic 
+		a = 3, b = 4;
+		a = a + b; --> a = 7
+		b = a - b; --> b = 3
+		a = a * b; --> a = 21
+		b = a / b; --> b = 7
+		a++;
+		i = a % b; --> 1
+	*/
+	int i = 0, a = 3, b = 4;
 
-	printf("\n\nTest NULL dereference:\n\n");
-	printf("ptr =  0x%p\n", ptr);
+	printf("\n\nTest integer arithmetic :\n\n");
+	printf("i before arithmetic =  %d\n", i);
 	printf("===BEGIN ASM===\n");
 
-	__NULL_dereference(ptr);
+	i = __basic_int_arith(a, b);
 
 	printf("===END ASM===\n");
+	printf("i after arithmetic =  %d\n", i);	
 }
 
 extern int __goto();
 void test_goto()
 {
-	/*unconditional jump to i = 10; */
+	/* Unconditional jump to i = 10 */
 	int i = 4;
 
 	printf("\n\nTest goto:\n\n");
@@ -213,7 +242,6 @@ void test_branching()
 	test_if_else();
 	test_switch_case();
 }
-
 
 extern int  __do_while_loop(int i);
 void test_do_while_loop()
@@ -305,6 +333,20 @@ void test_array_setup()
 	printf("i after test =  %d\n", i);
 }
 
+extern void __NULL_dereference();
+void test_NULL_dereference()
+{
+	int *ptr = NULL;
+
+	printf("\n\nTest NULL dereference:\n\n");
+	printf("ptr =  0x%p\n", ptr);
+	printf("===BEGIN ASM===\n");
+
+	__NULL_dereference(ptr);
+
+	printf("===END ASM===\n");
+}
+
 int main()
 {
 	printf("Arm assembly test...\n");
@@ -319,6 +361,9 @@ int main()
 	/* Logical operators */
 	test_logical_ops();
 
+	/* Arithmetic operations */
+	test_arith_ops();
+
 	/* Branching - conditional/unconditional */
 	test_branching();
 
@@ -327,6 +372,7 @@ int main()
 
 	/* Pointers */
 	test_pointer_setup();
+
 	/* Arrays */
 	test_array_setup();
 
@@ -344,7 +390,6 @@ int main()
 	// pre vs post increment
 	// TODO continue, break
 	// TODO shifts - logical/arithmetic on signed/unsigned
-
 
 	printf("Arm assembly test...DONE\n");
 

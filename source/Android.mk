@@ -3,6 +3,7 @@ include $(CLEAR_VARS)
 
 LOCAL_SRC_FILES:=\
 	arm_test.c \
+	test_arith_ops.S \
 	test_arm.S \
 	test_arm_arrays.S \
 	test_bit_ops.S \
