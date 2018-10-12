@@ -19,7 +19,6 @@ __array_setup:
 
 	LDR x1, [x0] 		// X1 <- arr[0]
 	STR x1, [SP]
-	LDR x1, [SP]
 	MOV x1, #9 		// arr[0] = 9
 	STR x1, [SP]
 	LDR x1, [SP]
@@ -33,7 +32,6 @@ __array_setup:
 
 	LDR x1, [x0, #8] 	// X1 <- arr[2]
 	STR x1, [SP, #8]
-	LDR x1, [SP, #8]
 	MOV x1, #6 		// arr[2] = 6
 	STR x1, [SP, #8]
 	LDR x1, [SP, #8]

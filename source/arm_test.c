@@ -408,12 +408,33 @@ void test_NULL_dereference()
 	printf("===END ASM===\n");
 }
 
+struct my_car {
+	float max_speed;
+	int color;
+	char is_automatic;
+};
+
+extern void __struct_set_value(struct my_car *mc);
+void test_structs()
+{
+	struct my_car mc;
+
+	/* Get values of struct my_car members */
+	printf("\n\nTest structs:\n\n");
+	printf("===BEGIN ASM===\n");
+
+	__struct_set_value(&mc);
+
+	printf("===END ASM===\n");
+
+	printf("Max speed %f\n", mc.max_speed);
+	printf("Color : %s\n", ((mc.color == 2) ? "RED" : "BLUE"));
+	printf("Is Automatic ? : %s\n", ((mc.is_automatic == 1) ? "YES" : "NO"));
+}
+
 int main()
 {
 	printf("Arm assembly test...\n");
-
-	test_bit_ops();
-#if 0
 
 	/* Basic Assembly Testing */
 	test_increment();
@@ -441,20 +462,11 @@ int main()
 	test_array_setup();
 
 	/* Error conditions */
-	//	test_NULL_dereference();
+	// test_NULL_dereference();
 
+	/* Structs */
+	test_structs();
 
-	//.TODO 
-
-	// struct, bit fields
-	// shifts - logical/arithmetic on signed/unsigned
-
-	// signed/unsigned int handling
-	// float (and double) with arithmetic ops
-	// pre vs post increment
-	// TODO continue, break
-	// TODO fix x0 -> w0 in all examples
-#endif
 	printf("Arm assembly test...DONE\n");
 
 	return 0;
