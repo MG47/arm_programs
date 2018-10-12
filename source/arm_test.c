@@ -84,7 +84,7 @@ void test_bit_toggle()
 	printf("i after bit toggle = 0x%x\n", i); // should be 0xD367 ( 0b1101001101100111)
 }
 
-extern __bit_complement();
+extern int __bit_complement();
 void test_bit_complement()
 {
 	int i = 0xAAAAAAAA; // 1010 ...
@@ -99,12 +99,73 @@ void test_bit_complement()
 	printf("i after bit complement = 0x%x\n", i); // 0101 ... 
 }
 
+extern unsigned int __unsigned_left_shift(unsigned int un_i);
+extern unsigned int __unsigned_right_shift(unsigned int un_i);
+extern int __signed_left_shift(int i);
+extern int __signed_right_shift(int i);
+void test_bit_shifts()
+{
+	unsigned int un_i;
+	int i;
+
+	printf("\n\nTest bit shifts (shifts by 1):\n\n");
+
+	/* Test 1: Unsigned left shift - logical */
+	printf("\nTest 1: Unsigned left shift\n");
+
+	un_i = 0x3453FD10; //110100010100111111110100010000
+	printf("un_i before left shift =  0x%x, (dec %u)\n", un_i, un_i);
+	printf("===BEGIN ASM===\n");
+
+	un_i = __unsigned_left_shift(un_i);
+
+	printf("===END ASM===\n");
+	printf("un_i after left shift = 0x%x, (dec %u)\n", un_i, un_i); // 0x68A7FA20
+
+	/* Test 2: Unsigned right shift - logical  */
+	printf("\nTest 2: Unsigned right shift\n");
+
+	un_i = 0x3453FD10; //110100010100111111110100010000
+	printf("un_i before right shift =  0x%x, (dec %u)\n", un_i, un_i); // 0x1A29FE88
+	printf("===BEGIN ASM===\n");
+
+	un_i = __unsigned_right_shift(un_i); 
+
+	printf("===END ASM===\n");
+	printf("un_i after right shift = 0x%x, (dec %u)\n", un_i, un_i);
+
+	/* Test 3: Signed left shift - arithmetic */
+	printf("\nTest 3: Signed left shift\n");
+
+	i = 0xFF1C002D; //11111111000111000000000000101101
+	printf("i before left shift =  0x%x, (dec %d)\n", i, i);
+	printf("===BEGIN ASM===\n");
+
+	i = __signed_left_shift(i);
+
+	printf("===END ASM===\n");
+	printf("i after left shift = 0x%x, (dec %d)\n", i, i); //0xFE38005A
+
+	/* Test 4: Signed right shift - arithmetic*/
+	printf("\nTest 4: Signed right shift\n");
+
+	i = -14942163; // 0xFFFFE93B3E
+	printf("i before right shift =  0x%x, (dec %d)\n", i, i);
+	printf("===BEGIN ASM===\n");
+
+	i = __signed_right_shift(i);
+
+	printf("===END ASM===\n");
+	printf("i after right shift = 0x%x, (dec %d)\n", i, i); // 0x7F8E0016
+}
+
 void test_bit_ops()
 {
 	test_bit_clear();
 	test_bit_set();
 	test_bit_toggle();
 	test_bit_complement();
+	test_bit_shifts();
 }
 
 extern int __logical_and(int a, int b);
@@ -351,11 +412,14 @@ int main()
 {
 	printf("Arm assembly test...\n");
 
+	test_bit_ops();
+#if 0
+
 	/* Basic Assembly Testing */
 	test_increment();
 	test_function_setup();
 
-	/* Bit manipulation */
+	/* Bitwise operators */
 	test_bit_ops();
 
 	/* Logical operators */
@@ -379,18 +443,18 @@ int main()
 	/* Error conditions */
 	//	test_NULL_dereference();
 
-	// struct, bit fields
 
-	/* TODO */
-	// bit invert
-	// arithmetic ops
-	// relational
+	//.TODO 
+
+	// struct, bit fields
+	// shifts - logical/arithmetic on signed/unsigned
+
 	// signed/unsigned int handling
-	// float
+	// float (and double) with arithmetic ops
 	// pre vs post increment
 	// TODO continue, break
-	// TODO shifts - logical/arithmetic on signed/unsigned
-
+	// TODO fix x0 -> w0 in all examples
+#endif
 	printf("Arm assembly test...DONE\n");
 
 	return 0;
