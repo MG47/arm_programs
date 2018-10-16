@@ -432,6 +432,32 @@ void test_structs()
 	printf("Is Automatic ? : %s\n", ((mc.is_automatic == 1) ? "YES" : "NO"));
 }
 
+extern float __float_arith();
+void test_float_arith()
+{
+	/* Test floating-point arithmetic
+		float a = 65.00, b = -1.223
+		a = sqrt a --> a = 8.062258
+		b = abs a --> b = 1.223
+		a = a + b; --> a = 9.285257
+		b = a - b; --> b = 8.062258
+		a = a * b; --> a = 74.860138
+		b = a / b; --> b = 9.285257
+		b = round-down b = 9.000000
+		return b;
+	*/
+	float i = 0;
+
+	printf("\n\nTest Floating-point arithmetic :\n\n");
+	printf("i before arithmetic =  %f\n", i);
+	printf("===BEGIN ASM===\n");
+
+	i = __float_arith();
+
+	printf("===END ASM===\n");
+	printf("i after arithmetic =  %f\n", i);
+}
+
 int main()
 {
 	printf("Arm assembly test...\n");
@@ -466,6 +492,9 @@ int main()
 
 	/* Structs */
 	test_structs();
+
+	/* Floating-point arithmetic */
+	test_float_arith();
 
 	printf("Arm assembly test...DONE\n");
 
